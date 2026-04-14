@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chairside Copilot — Visual DNA Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --carbon: #0d1117;
+      --graphite: #151b23;
+      --steel: #222b36;
+      --steel-2: #2d3642;
+      --fog: #eaf0f3;
+      --fog-soft: rgba(234, 240, 243, 0.64);
+      --cyan: #6fe7ff;
+      --cobalt: #5b8cff;
+      --amber: #ffb84d;
+      --red: #ff5c57;
+      --mint: #52d6a4;
+      --radius: 4px;
+      --radius-lg: 6px;
+      --border: 1px solid var(--steel);
+      --shadow-hard: 2px 2px 0 rgba(0,0,0,0.42);
+      --grid-gap: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--carbon); color: var(--fog); }
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(91, 140, 255, 0.12), transparent 26%),
+        linear-gradient(180deg, #0b0f14 0%, #0d1117 100%);
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 360px;
+      min-height: 100vh;
+    }
+
+    .rail {
+      border-right: var(--border);
+      background: rgba(21, 27, 35, 0.82);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 12px;
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--cyan);
+      background:
+        linear-gradient(135deg, rgba(111,231,255,0.18), rgba(91,140,255,0.08));
+      box-shadow: var(--shadow-hard);
+      position: relative;
+    }
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      background: var(--cyan);
+      opacity: 0.9;
+    }
+    .brand-mark::before { inset: 7px auto 7px 20px; width: 2px; }
+    .brand-mark::after { inset: 20px 7px auto 7px; height: 2px; }
+
+    .rail-btn {
+      width: 56px;
+      min-height: 56px;
+      border: var(--border);
+      background: var(--graphite);
+      color: var(--fog-soft);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-hard);
+      transition: transform .12s ease, border-color .12s ease, color .12s ease, background .12s ease;
+      padding: 4px;
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .rail-btn.active,
+    .rail-btn:hover {
+      color: var(--carbon);
+      background: var(--cyan);
+      border-color: var(--cyan);
+      transform: translate(-1px, -1px);
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: 68px auto;
+      min-width: 0;
+      border-right: var(--border);
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: var(--border);
+      background: rgba(21, 27, 35, 0.88);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 8;
+    }
+
+    .hud-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .hud-tag {
+      padding: 6px 10px;
+      border: 1px solid var(--steel-2);
+      background: rgba(34, 43, 54, 0.8);
+      color: var(--fog-soft);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .hud-mode {
+      border-color: rgba(111,231,255,0.45);
+      color: var(--cyan);
+      background: rgba(111,231,255,0.08);
+    }
+
+    .hud-title {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hud-right {
+      color: var(--fog-soft);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .view {
+      display: none;
+      gap: 16px;
+      min-width: 0;
+    }
+    .view.active { display: grid; }
+
+    .slab {
+      border: var(--border);
+      background: linear-gradient(180deg, rgba(21,27,35,.98), rgba(13,17,23,.98));
+      box-shadow: var(--shadow-hard);
+      min-width: 0;
+    }
+
+    .slab-header {
+      padding: 10px 14px;
+      border-bottom: var(--border);
+      background: rgba(34,43,54,.92);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 44px;
+    }
+
+    .slab-title {
+      font-size: 11px;
+      color: var(--cyan);
+    }
+
+    .slab-content { padding: 14px; }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+    }
+
+    .blueprint {
+      border: 1px dashed rgba(111,231,255,0.35);
+      background:
+        linear-gradient(rgba(111,231,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(111,231,255,.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(21,27,35,1), rgba(13,17,23,1));
+      background-size: 28px 28px, 28px 28px, auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 160px 92px;
+      gap: 10px;
+      min-height: 290px;
+    }
+
+    .tray-zone {
+      border: 1px solid rgba(91,140,255,0.28);
+      background: rgba(91,140,255,0.07);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .tray-zone strong {
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    .tray-zone span {
+      font-size: 11px;
+      color: var(--fog-soft);
+    }
+    .tray-zone.alert {
+      border-color: rgba(255,184,77,.45);
+      background: rgba(255,184,77,.08);
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 12px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border: var(--border);
+      background: rgba(13,17,23,.76);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--mint);
+      box-shadow: 0 0 0 2px rgba(82,214,164,.12);
+    }
+    .dot.warn { background: var(--amber); box-shadow: 0 0 0 2px rgba(255,184,77,.12); }
+    .dot.dim { background: var(--steel-2); box-shadow: none; }
+
+    .row-title { font-size: 14px; }
+    .row-meta { font-size: 11px; color: var(--fog-soft); }
+
+    .chip {
+      padding: 5px 8px;
+      border: 1px solid var(--steel-2);
+      background: rgba(34,43,54,.72);
+      color: var(--fog-soft);
+      font-size: 10px;
+    }
+    .chip.warn { border-color: rgba(255,184,77,.45); color: var(--amber); }
+    .chip.info { border-color: rgba(91,140,255,.4); color: var(--cobalt); }
+    .chip.live { border-color: rgba(111,231,255,.5); color: var(--cyan); }
+
+    .alert-stack {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .alert {
+      border: 1px solid rgba(255,184,77,.42);
+      background: rgba(255,184,77,.08);
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--fog);
+    }
+    .alert.red {
+      border-color: rgba(255,92,87,.42);
+      background: rgba(255,92,87,.08);
+    }
+
+    .procedure-layout {
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .status-rail {
+      border: var(--border);
+      background: rgba(13,17,23,.85);
+      padding: 14px 0;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      justify-items: center;
+    }
+
+    .rail-node {
+      width: 2px;
+      height: 42px;
+      background: var(--steel-2);
+      position: relative;
+    }
+    .rail-node::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      background: var(--steel-2);
+      border: 1px solid var(--steel-2);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .rail-node.current { background: rgba(111,231,255,.45); }
+    .rail-node.current::after { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 14px rgba(111,231,255,.45); }
+    .rail-node.complete { background: rgba(82,214,164,.45); }
+    .rail-node.complete::after { background: var(--mint); border-color: var(--mint); }
+
+    .directive {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 540px;
+    }
+
+    .directive-head {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      border-bottom: var(--border);
+      padding: 12px 14px;
+      background: rgba(13,17,23,.68);
+    }
+    .directive-cell { min-width: 0; }
+    .directive-label { font-size: 10px; color: var(--fog-soft); }
+    .directive-value { margin-top: 6px; font-size: 12px; }
+
+    .directive-core {
+      padding: 28px 24px 20px;
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .current-tag {
+      color: var(--fog-soft);
+      font-size: 11px;
+    }
+    .current-step {
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      max-width: 9ch;
+    }
+    .step-time {
+      color: var(--fog-soft);
+      font-size: 13px;
+    }
+
+    .predictive {
+      border: 1px dashed rgba(91,140,255,.45);
+      background: rgba(91,140,255,.08);
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+      max-width: 520px;
+    }
+
+    .sterile-bar {
+      display: grid;
+      grid-template-columns: 168px 1fr 168px;
+      gap: 12px;
+      padding: 14px;
+      border-top: var(--border);
+      background: rgba(21,27,35,.92);
+    }
+
+    .btn {
+      min-height: 60px;
+      border: var(--border);
+      background: rgba(34,43,54,.85);
+      color: var(--fog);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: transform .1s ease, background .1s ease, color .1s ease, border-color .1s ease;
+      box-shadow: var(--shadow-hard);
+    }
+    .btn:hover { transform: translate(-1px, -1px); }
+    .btn.primary {
+      background: var(--cyan);
+      color: #091117;
+      border-color: var(--cyan);
+      font-size: 20px;
+    }
+    .btn.alert {
+      border-color: rgba(255,92,87,.45);
+      color: var(--red);
+      background: rgba(255,92,87,.08);
+    }
+
+    .sidebar-stack {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .voice-panel {
+      position: relative;
+      overflow: hidden;
+      min-height: 182px;
+    }
+
+    .voice-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid rgba(111,231,255,.36);
+      background: rgba(111,231,255,.08);
+      color: var(--cyan);
+      cursor: pointer;
+      box-shadow: var(--shadow-hard);
+      font-size: 12px;
+    }
+
+    .wave {
+      display: flex;
+      align-items: end;
+      gap: 6px;
+      height: 72px;
+      margin-top: 18px;
+    }
+    .wave span {
+      display: block;
+      width: 8px;
+      background: linear-gradient(180deg, rgba(111,231,255,.95), rgba(91,140,255,.42));
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+    .wave span:nth-child(1) { height: 18px; animation-delay: .1s; }
+    .wave span:nth-child(2) { height: 44px; animation-delay: .35s; }
+    .wave span:nth-child(3) { height: 28px; animation-delay: .2s; }
+    .wave span:nth-child(4) { height: 58px; animation-delay: .45s; }
+    .wave span:nth-child(5) { height: 36px; animation-delay: .15s; }
+    .wave span:nth-child(6) { height: 50px; animation-delay: .4s; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scaleY(.55); opacity: .7; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+
+    .voice-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(7, 10, 14, 0.68);
+      border: 1px solid rgba(111,231,255,.18);
+      display: none;
+      padding: 18px;
+      backdrop-filter: blur(4px);
+    }
+    .voice-overlay.active { display: grid; align-content: end; }
+
+    .note-rail {
+      background: rgba(21,27,35,.92);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 16px;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      min-width: 0;
+    }
+
+    .dna-title {
+      font-size: 12px;
+      color: var(--cyan);
+    }
+
+    .dna-copy {
+      font-size: 13px;
+      color: var(--fog-soft);
+      line-height: 1.55;
+    }
+
+    .token-grid, .rules-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .token-row {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: var(--border);
+      background: rgba(13,17,23,.66);
+    }
+
+    .swatch {
+      height: 28px;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+    }
+
+    .rule {
+      border: var(--border);
+      background: rgba(13,17,23,.66);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .rule strong { color: var(--fog); }
+
+    .new-patient-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+    }
+
+    .protocol-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .protocol-item {
+      padding: 12px;
+      border: var(--border);
+      background: rgba(13,17,23,.68);
+      display: grid;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .protocol-item.active {
+      border-color: rgba(111,231,255,.5);
+      background: rgba(111,231,255,.08);
+    }
+
+    .flow-board {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 68px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 12px;
+      border: var(--border);
+      background: rgba(13,17,23,.68);
+    }
+    .flow-step.current {
+      border-color: rgba(111,231,255,.5);
+      box-shadow: inset 3px 0 0 var(--cyan);
+      background: linear-gradient(90deg, rgba(111,231,255,.08), rgba(13,17,23,.68));
+    }
+
+    .step-num {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--steel-2);
+      color: var(--fog-soft);
+      font-size: 12px;
+    }
+
+    .flow-title { font-size: 15px; font-weight: 700; }
+    .flow-note { font-size: 12px; color: var(--fog-soft); margin-top: 4px; }
+
+    .hero-note {
+      padding: 14px;
+      border: 1px solid rgba(111,231,255,.24);
+      background: rgba(111,231,255,.06);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      padding: 10px 14px;
+      border-top: var(--border);
+      color: var(--fog-soft);
+      font-size: 12px;
+      background: rgba(21,27,35,.86);
+    }
+
+    @media (max-width: 1180px) {
+      .shell {
+        grid-template-columns: 72px 1fr;
+      }
+      .note-rail {
+        grid-column: 1 / -1;
+        position: static;
+        height: auto;
+        border-top: var(--border);
+      }
+      .main {
+        border-right: none;
+      }
+      .setup-grid,
+      .procedure-layout,
+      .new-patient-grid {
+        grid-template-columns: 1fr;
+      }
+      .directive { min-height: 0; }
+    }
+
+    @media (max-width: 740px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .rail {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: var(--border);
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        justify-items: stretch;
+      }
+      .brand-mark { display: none; }
+      .rail-btn { width: 100%; min-height: 52px; }
+      .hud {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .hud-left {
+        flex-wrap: wrap;
+      }
+      .directive-head,
+      .sterile-bar {
+        grid-template-columns: 1fr;
+      }
+      .current-step { max-width: none; }
+      .flow-step {
+        grid-template-columns: 52px 1fr;
+      }
+      .flow-step .chip { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Primary views">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <button class="rail-btn active mono" data-view="setup">Tray<br>Setup</button>
+      <button class="rail-btn mono" data-view="procedure">Procedure</button>
+      <button class="rail-btn mono" data-view="voice">Voice</button>
+      <button class="rail-btn mono" data-view="patient">New<br>Patient</button>
+      <button class="rail-btn mono" data-view="system">DNA</button>
+    </aside>
+
+    <section class="main">
+      <header class="hud">
+        <div class="hud-left">
+          <span class="hud-tag mono hud-mode">Operatory Mode</span>
+          <span class="hud-tag mono">OP-04</span>
+          <div class="hud-title">Dr. Smith · Crown Prep · Tooth 14</div>
+        </div>
+        <div class="hud-right mono">Elapsed 12:44</div>
+        <div class="hud-right mono">Chairside Copilot / Visual DNA</div>
+      </header>
+
+      <div class="workspace">
+        <section class="view active" id="view-setup">
+          <div class="slab">
+            <div class="slab-header">
+              <div class="slab-title mono">Doctor-Specific Tray Setup</div>
+              <div class="chip live mono">Ready 8 / 10</div>
+            </div>
+            <div class="slab-content setup-grid">
+              <div>
+                <div class="blueprint">
+                  <div class="tray-zone">
+                    <span class="mono">Zone 01</span>
+                    <strong>Mirror<br>Explorer<br>Cotton Pliers</strong>
+                    <span>Diagnostic cluster</span>
+                  </div>
+                  <div class="tray-zone">
+                    <span class="mono">Zone 02</span>
+                    <strong>High-Speed<br>#330 Burr<br>Burr Block</strong>
+                    <span>Prep instruments</span>
+                  </div>
+                  <div class="tray-zone alert">
+                    <span class="mono">Zone 03</span>
+                    <strong>Shade Tab<br>Cord #00</strong>
+                    <span>Verify before anesthetic</span>
+                  </div>
+                  <div class="tray-zone" style="grid-column: span 2;">
+                    <span class="mono">Zone 04</span>
+                    <strong>Anesthetic Syringe · Topical · Suction · 2x2 Gauze</strong>
+                    <span>Injection + isolation</span>
+                  </div>
+                  <div class="tray-zone">
+                    <span class="mono">Zone 05</span>
+                    <strong>Impression Material</strong>
+                    <span>Stage later</span>
+                  </div>
+                </div>
+                <div class="alert-stack">
+                  <div class="alert"><span class="mono">Doctor preference:</span> Confirm shade match before local anesthetic.</div>
+                  <div class="alert red"><span class="mono">Missing:</span> Impression material not staged yet.</div>
+                </div>
+              </div>
+
+              <div class="list">
+                <div class="row">
+                  <div class="dot"></div>
+                  <div>
+                    <div class="row-title">Mirror / Explorer / Cotton Pliers</div>
+                    <div class="row-meta mono">Diagnostic set</div>
+                  </div>
+                  <div class="chip info mono">ready</div>
+                </div>
+                <div class="row">
+                  <div class="dot"></div>
+                  <div>
+                    <div class="row-title">High-Speed Handpiece</div>
+                    <div class="row-meta mono">Prep stage</div>
+                  </div>
+                  <div class="chip info mono">ready</div>
+                </div>
+                <div class="row">
+                  <div class="dot warn"></div>
+                  <div>
+                    <div class="row-title">Shade Tab + Retraction Cord</div>
+                    <div class="row-meta mono">Doctor-specific precheck</div>
+                  </div>
+                  <div class="chip warn mono">verify</div>
+                </div>
+                <div class="row">
+                  <div class="dot dim"></div>
+                  <div>
+                    <div class="row-title">Impression Material</div>
+                    <div class="row-meta mono">Needed after prep</div>
+                  </div>
+                  <div class="chip mono">pending</div>
+                </div>
+                <div class="hero-note">
+                  The tray view should feel like a pre-flight board. Visual zones on the left. Verification and missing-state logic on the right. Doctor quirks must never feel buried.
+                </div>
+              </div>
+            </div>
+            <div class="footer-note mono">Use structure first. AI adds speed, not ambiguity.</div>
+          </div>
+        </section>
+
+        <section class="view" id="view-procedure">
+          <div class="procedure-layout">
+            <div class="status-rail slab">
+              <div class="rail-node complete"></div>
+              <div class="rail-node complete"></div>
+              <div class="rail-node current"></div>
+              <div class="rail-node"></div>
+              <div class="rail-node"></div>
+            </div>
+
+            <div class="slab directive">
+              <div class="directive-head">
+                <div class="directive-cell">
+                  <div class="directive-label mono">Room</div>
+                  <div class="directive-value mono">OP-04</div>
+                </div>
+                <div class="directive-cell">
+                  <div class="directive-label mono">Context</div>
+                  <div class="directive-value mono">Dr. Smith · Crown Prep · 14</div>
+                </div>
+                <div class="directive-cell">
+                  <div class="directive-label mono">Elapsed</div>
+                  <div class="directive-value mono">12:44</div>
+                </div>
+              </div>
+
+              <div class="directive-core">
+                <div class="current-tag mono">Current directive</div>
+                <div class="current-step">Initial Occlusal Reduction</div>
+                <div class="step-time mono">Estimated phase time · 00:30</div>
+                <div class="predictive">
+                  <div class="mono" style="color: var(--cobalt);">Next hand-off prediction</div>
+                  <div style="font-size: 20px; font-weight: 700;">#330 carbide burr + high-speed handpiece</div>
+                  <div style="font-size: 13px; color: var(--fog-soft);">This module should always show the most likely next item before the doctor asks for it.</div>
+                </div>
+              </div>
+
+              <div class="sterile-bar">
+                <button class="btn mono">Previous</button>
+                <button class="btn primary mono">Next Step</button>
+                <button class="btn alert mono">Missing Item</button>
+              </div>
+            </div>
+
+            <div class="sidebar-stack">
+              <div class="slab">
+                <div class="slab-header">
+                  <div class="slab-title mono">Readiness</div>
+                  <div class="chip live mono">Live</div>
+                </div>
+                <div class="slab-content list">
+                  <div class="row">
+                    <div class="dot"></div>
+                    <div>
+                      <div class="row-title">Burr Block</div>
+                      <div class="row-meta mono">Dr. Smith set</div>
+                    </div>
+                    <div class="chip mono">staged</div>
+                  </div>
+                  <div class="row">
+                    <div class="dot"></div>
+                    <div>
+                      <div class="row-title">Retraction Cord #00</div>
+                      <div class="row-meta mono">Open and ready</div>
+                    </div>
+                    <div class="chip mono">staged</div>
+                  </div>
+                  <div class="alert"><span class="mono">Preference:</span> Assistant confirms shade before anesthetic.</div>
+                </div>
+              </div>
+
+              <div class="slab">
+                <div class="slab-header">
+                  <div class="slab-title mono">Micro Notes</div>
+                  <div class="chip info mono">Context</div>
+                </div>
+                <div class="slab-content dna-copy">
+                  Use this sidebar for injection of office notes, material swaps, or tempo warnings. The center stays focused on action. The right rail carries context, not clutter.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-voice">
+          <div class="slab voice-panel">
+            <div class="slab-header">
+              <div class="slab-title mono">Voice Overlay Protocol</div>
+              <button class="voice-trigger mono" id="voiceToggle">Toggle Listen</button>
+            </div>
+            <div class="slab-content">
+              <div class="dna-copy">Voice should not become a chatbot screen. It should behave like a sterile command layer: dim the interface, listen, return one fast operational answer, then disappear.</div>
+              <div class="wave" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="voice-overlay active" id="voiceOverlay">
+              <div class="slab" style="max-width: 760px; margin-left: auto; width: 100%;">
+                <div class="slab-header">
+                  <div class="slab-title mono">Voice Listening</div>
+                  <div class="chip live mono">Mic Active</div>
+                </div>
+                <div class="slab-content" style="display:grid; gap:14px;">
+                  <div class="mono" style="color: var(--fog-soft);">Heard query</div>
+                  <div style="font-size: 20px; font-weight: 700;">“What’s next for Dr. Smith’s crown prep on 14?”</div>
+                  <div class="mono" style="color: var(--cobalt);">Rapid answer</div>
+                  <div style="font-size: 18px; line-height: 1.45;">Next: verify depth cut, continue reduction, keep cord ready. Hand off the #330 burr and high-speed.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-patient">
+          <div class="slab">
+            <div class="slab-header">
+              <div class="slab-title mono">New Patient Flow</div>
+              <div class="chip info mono">Office Playbook</div>
+            </div>
+            <div class="slab-content new-patient-grid">
+              <div class="protocol-list">
+                <div class="protocol-item active">
+                  <div class="mono" style="color: var(--cyan);">Protocol 01</div>
+                  <div style="font-size: 16px; font-weight: 700;">Adult New Patient Exam</div>
+                  <div class="dna-copy">High-value default flow for first-time visits.</div>
+                </div>
+                <div class="protocol-item">
+                  <div class="mono" style="color: var(--cobalt);">Protocol 02</div>
+                  <div style="font-size: 16px; font-weight: 700;">Emergency New Patient</div>
+                  <div class="dna-copy">Fast-triage version with compressed intake.</div>
+                </div>
+                <div class="protocol-item">
+                  <div class="mono" style="color: var(--cobalt);">Protocol 03</div>
+                  <div style="font-size: 16px; font-weight: 700;">New Hygiene Visit</div>
+                  <div class="dna-copy">Imaging and perio-prep workflow.</div>
+                </div>
+              </div>
+
+              <div class="flow-board">
+                <div class="flow-step current">
+                  <div class="step-num mono">01</div>
+                  <div>
+                    <div class="flow-title">Verify ID, insurance, and medical history</div>
+                    <div class="flow-note">Front desk confirms missing forms before patient is seated.</div>
+                  </div>
+                  <div class="chip warn mono">required</div>
+                </div>
+                <div class="flow-step">
+                  <div class="step-num mono">02</div>
+                  <div>
+                    <div class="flow-title">Capture initial x-rays</div>
+                    <div class="flow-note">Assistant follows office imaging standard before doctor exam.</div>
+                  </div>
+                  <div class="chip info mono">assistant</div>
+                </div>
+                <div class="flow-step">
+                  <div class="step-num mono">03</div>
+                  <div>
+                    <div class="flow-title">Flag bitewings for doctor review</div>
+                    <div class="flow-note">Dr. Smith wants bitewings reviewed before seating for exam.</div>
+                  </div>
+                  <div class="chip info mono">doctor pref</div>
+                </div>
+                <div class="flow-step">
+                  <div class="step-num mono">04</div>
+                  <div>
+                    <div class="flow-title">Handoff to treatment discussion</div>
+                    <div class="flow-note">Front + back office syncs next step before checkout.</div>
+                  </div>
+                  <div class="chip mono">handoff</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-system">
+          <div class="slab">
+            <div class="slab-header">
+              <div class="slab-title mono">Visual DNA Rules</div>
+              <div class="chip live mono">Build Spec</div>
+            </div>
+            <div class="slab-content" style="display:grid; gap:16px;">
+              <div class="hero-note">
+                This UI should feel like a live operatory system, not a generic SaaS dashboard. Action lives in the center. Readiness and exceptions live in the side rails. Color is sparse and purposeful: cyan for now, cobalt for context, amber or red for pay-attention states.
+              </div>
+              <div class="rules-grid">
+                <div class="rule"><strong>No soft startup UI.</strong> Avoid purple gradients, bubbly cards, playful chat layouts, or oversized rounded corners.</div>
+                <div class="rule"><strong>One dominant action.</strong> Every critical screen needs one massive primary control that works with gloves and pressure.</div>
+                <div class="rule"><strong>Doctor-specific injection.</strong> Preference notes, timing quirks, and material swaps must appear in structured places, never hidden in paragraphs.</div>
+                <div class="rule"><strong>State over decoration.</strong> The interface should clearly communicate ready, missing, current, next, blocked, or complete.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside class="note-rail">
+      <div class="slab">
+        <div class="slab-header">
+          <div class="slab-title mono">Design Tokens</div>
+          <div class="chip info mono">Core</div>
+        </div>
+        <div class="slab-content token-grid">
+          <div class="token-row">
+            <div class="swatch" style="background:#0d1117;"></div>
+            <div><div class="mono" style="font-size:10px; color:var(--fog-soft);">Carbon</div><div style="font-size:13px;">Background void</div></div>
+          </div>
+          <div class="token-row">
+            <div class="swatch" style="background:#151b23;"></div>
+            <div><div class="mono" style="font-size:10px; color:var(--fog-soft);">Graphite</div><div style="font-size:13px;">Panel base</div></div>
+          </div>
+          <div class="token-row">
+            <div class="swatch" style="background:#6fe7ff;"></div>
+            <div><div class="mono" style="font-size:10px; color:var(--fog-soft);">Cyan</div><div style="font-size:13px;">Action / active state</div></div>
+          </div>
+          <div class="token-row">
+            <div class="swatch" style="background:#5b8cff;"></div>
+            <div><div class="mono" style="font-size:10px; color:var(--fog-soft);">Cobalt</div><div style="font-size:13px;">Context / systemic info</div></div>
+          </div>
+          <div class="token-row">
+            <div class="swatch" style="background:#ffb84d;"></div>
+            <div><div class="mono" style="font-size:10px; color:var(--fog-soft);">Amber</div><div style="font-size:13px;">Pay attention</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slab">
+        <div class="slab-header">
+          <div class="slab-title mono">Type + Interaction</div>
+          <div class="chip mono">Rules</div>
+        </div>
+        <div class="slab-content rules-grid">
+          <div class="rule"><strong>Typeface split.</strong> Inter for critical instruction. IBM Plex Mono for metadata, timers, step IDs, and doctor/procedure labels.</div>
+          <div class="rule"><strong>Geometry.</strong> Sharp slabs. 4px radius max. 1px borders. Hard depth only.</div>
+          <div class="rule"><strong>Motion.</strong> No decorative float. Motion only for state change, listening state, or completion feedback.</div>
+        </div>
+      </div>
+
+      <div class="slab" style="min-height:0;">
+        <div class="slab-header">
+          <div class="slab-title mono">Codex Handoff Notes</div>
+          <div class="chip live mono">Use As DNA</div>
+        </div>
+        <div class="slab-content dna-copy">
+          Use this file as visual DNA, not a frozen template. Keep the core shell, color system, and information hierarchy. Rebuild the actual app with real data models for doctors, procedures, tray profiles, patient flows, and voice actions. The product should always feel like an operatory execution layer, not a chatbot wrapper.
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('[data-view]');
+    const views = {
+      setup: document.getElementById('view-setup'),
+      procedure: document.getElementById('view-procedure'),
+      voice: document.getElementById('view-voice'),
+      patient: document.getElementById('view-patient'),
+      system: document.getElementById('view-system')
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        Object.values(views).forEach(view => view.classList.remove('active'));
+        views[btn.dataset.view].classList.add('active');
+      });
+    });
+
+    const voiceToggle = document.getElementById('voiceToggle');
+    const voiceOverlay = document.getElementById('voiceOverlay');
+    if (voiceToggle && voiceOverlay) {
+      voiceToggle.addEventListener('click', () => {
+        voiceOverlay.classList.toggle('active');
+      });
+    }
+  </script>
+</body>
+</html>
