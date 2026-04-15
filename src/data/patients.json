@@ -1,0 +1,42 @@
+{
+  "activePatient": {
+    "displayName": "S. Garcia",
+    "fullName": "Sofia Garcia",
+    "chartId": "PT-20481",
+    "dob": "1988-02-17",
+    "allergies": ["Latex"],
+    "medicalFlags": ["Anxiety protocol", "Nitrous cleared"],
+    "doctorPreference": "Verify occlusion with articulating paper before reducing distal wall."
+  },
+  "newPatientFlow": {
+    "arrivalWindow": "08:40",
+    "source": "Direct referral",
+    "reason": "Upper left crown sensitivity",
+    "steps": [
+      {
+        "id": "identity",
+        "label": "Identity capture",
+        "detail": "Confirm name, DOB, and referral packet against chart shell.",
+        "state": "complete"
+      },
+      {
+        "id": "history",
+        "label": "Medical history",
+        "detail": "Review allergies, anticoagulants, and anxiety protocol before seat.",
+        "state": "active"
+      },
+      {
+        "id": "radiographs",
+        "label": "Diagnostic intake",
+        "detail": "Mark bitewing + PA imaging package and shade reference photos.",
+        "state": "queued"
+      },
+      {
+        "id": "rooming",
+        "label": "Operatory handoff",
+        "detail": "Push summary to Procedure Mode with doctor preference injection.",
+        "state": "queued"
+      }
+    ]
+  }
+}

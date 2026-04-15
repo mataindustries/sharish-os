@@ -1,0 +1,41 @@
+{
+  "overlay": {
+    "prompt": "Listening for command phrases: 'what's next', 'mark item missing', 'repeat doctor preference'.",
+    "wakeWord": "Sharish",
+    "mode": "Command layer only"
+  },
+  "commands": [
+    {
+      "id": "next",
+      "phrase": "What's next?",
+      "response": "Predict next handoff and stage the instrument lane."
+    },
+    {
+      "id": "missing",
+      "phrase": "Mark item missing",
+      "response": "Raise tray exception and highlight the critical zone."
+    },
+    {
+      "id": "pref",
+      "phrase": "Repeat doctor preference",
+      "response": "Inject the saved preference into the active procedure slab."
+    }
+  ],
+  "events": [
+    {
+      "time": "00:17:58",
+      "type": "detected",
+      "content": "Sharish, what's next?"
+    },
+    {
+      "time": "00:17:59",
+      "type": "system",
+      "content": "Next handoff predicted: #330 Carbide Burr plus high-speed handpiece."
+    },
+    {
+      "time": "00:18:03",
+      "type": "system",
+      "content": "Doctor preference remains active for distal wall clearance check."
+    }
+  ]
+}

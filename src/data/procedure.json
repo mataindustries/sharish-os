@@ -1,0 +1,50 @@
+{
+  "caseContext": {
+    "procedureName": "Crown Preparation",
+    "phase": "Preparation",
+    "doctor": "Dr. Rowan Chen",
+    "assistant": "M. Patel, RDA",
+    "room": "OP-04",
+    "elapsed": "00:18:42"
+  },
+  "currentStep": {
+    "label": "Current Step",
+    "title": "Initial Occlusal Reduction",
+    "detail": "Maintain water spray and keep reduction depth uniform across the occlusal table."
+  },
+  "nextHandoff": {
+    "label": "Predicted Next Handoff",
+    "instrument": "#330 Carbide Burr",
+    "supportingItem": "High-speed handpiece already primed on tray zone B2."
+  },
+  "doctorPreference": {
+    "title": "Preference Injection",
+    "detail": "Dr. Chen wants distal wall clearance checked before moving to proximal break."
+  },
+  "timeline": [
+    {
+      "id": "anesthesia",
+      "label": "Anesthesia confirmed",
+      "time": "00:04",
+      "state": "complete"
+    },
+    {
+      "id": "shade",
+      "label": "Shade reference captured",
+      "time": "00:08",
+      "state": "complete"
+    },
+    {
+      "id": "reduction",
+      "label": "Occlusal reduction",
+      "time": "Now",
+      "state": "active"
+    },
+    {
+      "id": "margin",
+      "label": "Axial wall + margin refinement",
+      "time": "Next",
+      "state": "queued"
+    }
+  ]
+}

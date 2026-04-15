@@ -1,0 +1,59 @@
+{
+  "readiness": {
+    "readyPercent": 84,
+    "zonesChecked": 5,
+    "zonesTotal": 6
+  },
+  "items": [
+    {
+      "id": "mirror",
+      "name": "Mirror / Explorer",
+      "slot": "A1",
+      "state": "ready"
+    },
+    {
+      "id": "handpiece",
+      "name": "High-speed handpiece",
+      "slot": "B2",
+      "state": "ready"
+    },
+    {
+      "id": "burr",
+      "name": "Burr block // crown prep set",
+      "slot": "B3",
+      "state": "ready"
+    },
+    {
+      "id": "cord",
+      "name": "Retraction cord #00",
+      "slot": "C1",
+      "state": "warning"
+    },
+    {
+      "id": "impression",
+      "name": "Impression material",
+      "slot": "D4",
+      "state": "critical"
+    }
+  ],
+  "setupChecklist": [
+    {
+      "id": "barriers",
+      "title": "Barrier and isolation check",
+      "detail": "Light handles, bracket tray, and suction lines sealed before seating.",
+      "state": "complete"
+    },
+    {
+      "id": "instruments",
+      "title": "Instrument zoning",
+      "detail": "Place prep burs by sequence, mirror forward, and orient handpiece tubing left.",
+      "state": "active"
+    },
+    {
+      "id": "materials",
+      "title": "Material reserve",
+      "detail": "Seat hemostatic, cord, and provisional material in rear slab lane.",
+      "state": "queued"
+    }
+  ]
+}

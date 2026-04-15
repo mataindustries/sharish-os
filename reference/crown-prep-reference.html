@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Operatory One | Chairside Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --carbon: #0D1117;
+            --graphite: #151B23;
+            --steel: #222B36;
+            --fog: #EAF0F3;
+            --cyan: #6FE7FF;
+            --cobalt: #5B8CFF;
+            --amber: #FFB84D;
+            --red: #FF5C57;
+            --mint: #52D6A4;
+            --radius: 4px;
+            --border: 1px solid var(--steel);
+        }
+
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--carbon);
+            color: var(--fog);
+            font-family: 'IBM Plex Sans', sans-serif;
+            margin: 0;
+            overflow: hidden; /* Lock scroll for app feel */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .mono { font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+
+
+        /* --- Header HUD --- */
+        header {
+            height: 60px;
+            background: var(--graphite);
+            border-bottom: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+
+        .status-pill {
+            background: rgba(111, 231, 255, 0.1);
+            color: var(--cyan);
+            padding: 4px 12px;
+            border: 1px solid var(--cyan);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        /* --- Main Layout --- */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1px;
+            background: var(--steel); /* Border color between panels */
+        }
+
+
+        .viewport {
+            background: var(--carbon);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+
+        .sidebar {
+            background: var(--graphite);
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* --- Slab Components --- */
+        .slab {
+            background: var(--graphite);
+            border: var(--border);
+            margin-bottom: 20px;
+        }
+
+
+        .slab-header {
+            background: var(--steel);
+            padding: 8px 15px;
+            color: var(--cyan);
+        }
+
+
+        .slab-content { padding: 15px; }
+
+
+        /* --- Procedure Interface --- */
+        .procedure-context { margin-bottom: 40px; }
+        .procedure-title { font-size: 32px; font-weight: 600; margin: 5px 0; }
+        
+        .active-step-container {
+            border-left: 4px solid var(--cyan);
+            padding-left: 30px;
+            margin: 60px 0;
+        }
+
+
+        .step-label { color: rgba(234, 240, 253, 0.5); margin-bottom: 10px; }
+        .step-content { font-size: 48px; font-weight: 600; line-height: 1.1; }
+
+
+        .next-hint {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(91, 140, 255, 0.1);
+            border: 1px dashed var(--cobalt);
+            border-radius: var(--radius);
+        }
+
+
+        /* --- Controls --- */
+        .control-bar {
+            height: 100px;
+            background: var(--graphite);
+            border-top: var(--border);
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            padding: 15px;
+            gap: 15px;
+        }
+
+
+        .btn {
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+        }
+
+
+        .btn-primary { background: var(--cyan); color: var(--carbon); font-size: 20px; }
+        .btn-secondary { background: var(--steel); color: var(--fog); }
+        .btn-alert { border: 1px solid var(--red); color: var(--red); background: transparent; }
+
+
+        .btn:active { transform: scale(0.98); opacity: 0.8; }
+
+
+        /* --- Sidebar Lists --- */
+        .tray-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--steel);
+            font-size: 14px;
+        }
+        .item-status { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); margin-right: 12px; }
+        
+        .pref-note {
+            font-size: 13px;
+            color: var(--amber);
+            background: rgba(255, 184, 77, 0.1);
+            padding: 10px;
+            border-radius: var(--radius);
+            margin-top: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <header>
+        <div class="mono" style="color: var(--cyan);">Operatory One // V.01</div>
+        <div>
+            <span class="mono" style="margin-right: 20px;">Room: OP-04</span>
+            <span class="status-pill">LIVE PROCEDURE</span>
+        </div>
+        <div class="mono" id="timer">00:12:44</div>
+    </header>
+
+
+    <main>
+        <section class="viewport">
+            <div class="procedure-context">
+                <div class="mono" style="color: var(--cobalt);">Current Patient: S. Garcia</div>
+                <h1 class="procedure-title">Crown Preparation</h1>
+                <div class="mono">Assisting: Dr. Smith</div>
+            </div>
+
+
+            <div class="active-step-container">
+                <div class="mono step-label">Current Phase: Preparation</div>
+                <div class="step-content">Initial Occlusal Reduction</div>
+                
+                <div class="next-hint">
+                    <span class="mono" style="color: var(--cobalt);">Next hand-off prediction:</span><br>
+                    <strong style="font-size: 18px;">#330 Carbide Burr + High-Speed Handpiece</strong>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="sidebar">
+            <div class="slab-header mono">Tray Checklist</div>
+            <div class="slab-content">
+                <div class="tray-item"><div class="item-status"></div>Mirror / Explorer</div>
+                <div class="tray-item"><div class="item-status"></div>High-Speed Handpiece</div>
+                <div class="tray-item"><div class="item-status"></div>Burr Block (Dr. Smith Set)</div>
+                <div class="tray-item"><div class="item-status"></div>Retraction Cord #00</div>
+                <div class="tray-item" style="opacity: 0.4;"><div class="item-status" style="background: var(--steel);"></div>Impression Material</div>
+                
+                <div class="pref-note">
+                    <strong>DR. SMITH PREFERENCE:</strong><br>
+                    Verify shade match before local anesthetic administration.
+                </div>
+            </div>
+
+
+            <div style="margin-top: auto; padding: 20px; border-top: var(--border);">
+                <div class="mono" style="color: var(--cyan); margin-bottom: 10px;">Voice Copilot</div>
+                <div style="font-size: 14px; color: rgba(234,240,253,0.6); font-style: italic;">
+                    "Listening for 'What's next?'..."
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <div class="control-bar">
+        <button class="btn btn-secondary">
+            <span class="mono">Previous</span>
+        </button>
+        <button class="btn btn-primary">
+            Next Step
+        </button>
+        <button class="btn btn-alert">
+            <span class="mono">Missing Item</span>
+        </button>
+    </div>
+
+
+</body>
+</html>
