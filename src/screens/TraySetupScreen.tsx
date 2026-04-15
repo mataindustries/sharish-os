@@ -96,7 +96,7 @@ export function TraySetupScreen() {
     <div className="screen-stack">
       <Panel
         eyebrow="Tray Setup"
-        title="Procedure Staging Blueprint"
+        title="Crown Prep Staging"
         aside={
           <div className="status-stack">
             <span className="status-block status-block--cyan">{readyCount} ready</span>
@@ -136,9 +136,9 @@ export function TraySetupScreen() {
             <p>{tray.doctorNote.detail}</p>
           </div>
 
-          <div className={`signal-block ${selectedItem?.state === 'missing' ? 'signal-block--red' : 'signal-block--cobalt'}`}>
-            <div className="mono signal-block__label">Selected Tray Item</div>
-            <strong>{selectedItem?.name}</strong>
+            <div className={`signal-block ${selectedItem?.state === 'missing' ? 'signal-block--red' : 'signal-block--cobalt'}`}>
+              <div className="mono signal-block__label">Selected Tray Item</div>
+              <strong>{selectedItem?.name}</strong>
             <div className="ops-meta-list">
               <span>Slot: {selectedItem?.slot}</span>
               <span>Status: {selectedItem?.state}</span>
@@ -150,7 +150,7 @@ export function TraySetupScreen() {
       </Panel>
 
       <div className="panel-grid">
-        <Panel eyebrow="Readiness Sequence" title="Setup Checklist">
+        <Panel eyebrow="Readiness Sequence" title="Seat-Ready Checklist">
           <div className="checklist-stack">
             {checklist.map((item) => (
               <div className={`checklist-row checklist-row--${item.state}`} key={item.id}>
@@ -167,20 +167,20 @@ export function TraySetupScreen() {
 
         <Panel
           eyebrow="Setup Confirmation"
-          title="Room Ready Gate"
+          title="Release Gate"
           aside={
             <span className={`status-block ${confirmed ? 'status-block--cyan' : 'status-block--amber'}`}>
-              {confirmed ? 'Confirmed' : 'Awaiting confirm'}
+              {confirmed ? 'Released' : 'Hold'}
             </span>
           }
         >
           <div className="signal-stack">
             <div className={`signal-block ${missingCount > 0 ? 'signal-block--red' : 'signal-block--cyan'}`}>
               <div className="mono signal-block__label">{tray.confirmation.title}</div>
-              <strong>{confirmed ? 'Tray locked as ready' : `${readinessPercent}% staged`}</strong>
+              <strong>{confirmed ? 'Tray released to room' : `${readinessPercent}% staged`}</strong>
               <p>
                 {missingCount > 0
-                  ? `${missingCount} missing item blocks final confirmation. Clear or explicitly restage before seat.`
+                  ? `${missingCount} missing item keeps this room on hold. Restage it or clear the fallback plan with the doctor before seat.`
                   : tray.confirmation.detail}
               </p>
             </div>
@@ -208,8 +208,8 @@ export function TraySetupScreen() {
       <BottomActionBar
         previousLabel="Reset Tray"
         previousMeta="Restore default staging"
-        primaryLabel={confirmed ? 'Setup Confirmed' : 'Confirm Setup'}
-        primaryMeta={missingCount > 0 ? `${missingCount} missing block confirm` : 'Sterile field ready gate'}
+        primaryLabel={confirmed ? 'Tray Released' : 'Release Tray'}
+        primaryMeta={missingCount > 0 ? `${missingCount} item still blocks release` : 'Seat-ready gate'}
         secondaryLabel={selectedItem?.state === 'missing' ? 'Clear Missing' : 'Mark Missing'}
         secondaryMeta={selectedItem ? `${selectedItem.slot} // ${selectedItem.name}` : 'Select tray item'}
         onPrevious={resetTray}

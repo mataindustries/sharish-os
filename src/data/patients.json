@@ -6,7 +6,7 @@
     "dob": "1988-02-17",
     "allergies": ["Latex"],
     "medicalFlags": ["Anxiety protocol", "Nitrous cleared"],
-    "doctorPreference": "Verify occlusion with articulating paper before reducing distal wall."
+    "doctorPreference": "Dr. Chen wants articulating paper passed before distal wall refinement and prefers the mirror held lingual during the clearance check."
   },
   "newPatientFlow": {
     "arrivalWindow": "08:40",
@@ -16,42 +16,42 @@
     "templates": [
       {
         "id": "restorative-crown",
-        "name": "Restorative Crown Intake",
-        "summary": "Insurance, restorative history, imaging, and operatory handoff for crown consults.",
+        "name": "Crown Prep Consult Intake",
+        "summary": "Referral verification, restorative history, limited imaging, and doctor handoff for a crown-prep consult.",
         "tags": ["Restorative", "Preferred"],
         "tasks": [
           {
             "id": "identity",
-            "label": "Identity and referral packet",
-            "detail": "Confirm name, DOB, referral packet, and existing chart shell before seat.",
+            "label": "Referral packet and patient identity",
+            "detail": "Front desk has matched name, DOB, and the referral note to the existing chart shell.",
             "role": "Front Desk",
             "state": "complete"
           },
           {
             "id": "history",
-            "label": "Medical history reconciliation",
-            "detail": "Review allergies, anticoagulants, and anxiety protocol before assistant rooming.",
+            "label": "Medical history and consent review",
+            "detail": "Allergies, nitrous clearance, medications, and signed treatment consents are being reconciled before rooming.",
             "role": "Front Desk",
             "state": "active"
           },
           {
             "id": "radiographs",
-            "label": "Diagnostic imaging package",
-            "detail": "Queue bitewings, PA imaging, and shade photos before doctor exam.",
+            "label": "PA, bitewing, and shade photos",
+            "detail": "Assistant lane is queued to capture the PA, bitewing, and pre-op shade photos before doctor exam.",
             "role": "Assistant",
             "state": "queued"
           },
           {
             "id": "insurance",
-            "label": "Insurance card scan",
-            "detail": "Missing front and back card image; claim shell cannot be finalized.",
+            "label": "Insurance card images",
+            "detail": "Back-side insurance card image is still missing, so the estimate packet cannot be finalized.",
             "role": "Front Desk",
             "state": "missing"
           },
           {
             "id": "doctor-brief",
-            "label": "Doctor exam brief",
-            "detail": "Doctor review remains blocked until imaging and history are both clear.",
+            "label": "Doctor exam brief and room release",
+            "detail": "Doctor handoff stays blocked until medical history is cleared and pre-op imaging is attached.",
             "role": "Doctor",
             "state": "blocked"
           }
@@ -59,35 +59,35 @@
       },
       {
         "id": "emergency-pain",
-        "name": "Emergency Pain Intake",
-        "summary": "Fast triage with analgesic risk review and urgent operatory routing.",
+        "name": "Emergency Limited Exam",
+        "summary": "Rapid pain triage, medication review, limited imaging, and same-visit doctor routing.",
         "tags": ["Urgent", "Same day"],
         "tasks": [
           {
             "id": "triage",
-            "label": "Pain scale and triage",
-            "detail": "Capture pain score, swelling, and analgesic use at check-in.",
+            "label": "Pain scale, swelling, and triage notes",
+            "detail": "Front desk is documenting pain score, swelling, and last analgesic dose at check-in.",
             "role": "Front Desk",
             "state": "active"
           },
           {
             "id": "medications",
-            "label": "Medication review",
-            "detail": "Review allergy and medication conflicts before doctor exam.",
+            "label": "Medication and allergy screen",
+            "detail": "Assistant must clear allergy and medication conflicts before the doctor enters for the limited exam.",
             "role": "Assistant",
             "state": "queued"
           },
           {
             "id": "xray",
-            "label": "Limited PA imaging",
-            "detail": "Single urgent PA required before doctor enters operatory.",
+            "label": "Limited PA capture",
+            "detail": "Single PA is queued for the symptomatic tooth before the room is released to the doctor.",
             "role": "Assistant",
             "state": "queued"
           },
           {
             "id": "doctor-rapid",
-            "label": "Rapid doctor evaluation",
-            "detail": "Blocked until imaging is captured and pain triage is logged.",
+            "label": "Doctor limited exam",
+            "detail": "Doctor entry remains blocked until the pain note and PA image are both posted to chart.",
             "role": "Doctor",
             "state": "blocked"
           }
@@ -95,28 +95,28 @@
       },
       {
         "id": "new-patient-comprehensive",
-        "name": "Comprehensive New Patient",
-        "summary": "Full paperwork, imaging, and comprehensive doctor intake for first visit patients.",
+        "name": "Comprehensive New Patient Exam",
+        "summary": "Registration, consents, baseline records, and full doctor intake for first-visit patients.",
         "tags": ["Comprehensive", "Long form"],
         "tasks": [
           {
             "id": "forms",
-            "label": "Registration packet",
-            "detail": "Collect demographics, consent, and referral source at front desk.",
+            "label": "Registration and consent packet",
+            "detail": "Front desk is collecting demographics, HIPAA, consent, and referral source before records start.",
             "role": "Front Desk",
             "state": "active"
           },
           {
             "id": "photos",
-            "label": "Photo set and chart shell",
-            "detail": "Create baseline images and seed chart notes for doctor review.",
+            "label": "Baseline photo set and chart seeding",
+            "detail": "Assistant records are queued to add baseline photos and start the doctor note shell.",
             "role": "Assistant",
             "state": "queued"
           },
           {
             "id": "doctor-comprehensive",
-            "label": "Comprehensive exam handoff",
-            "detail": "Doctor review waits for forms and photo set completion.",
+            "label": "Doctor comprehensive exam handoff",
+            "detail": "Doctor intake stays blocked until registration is complete and baseline records are posted.",
             "role": "Doctor",
             "state": "blocked"
           }

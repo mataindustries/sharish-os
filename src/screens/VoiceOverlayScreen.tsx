@@ -110,9 +110,9 @@ export function VoiceOverlayScreen() {
               <div className="voice-state-line">
                 <span className="mono">State</span>
                 <strong>
-                  {overlayState === 'listening' && 'Listening for short command'}
-                  {overlayState === 'thinking' && 'Parsing command and routing response'}
-                  {overlayState === 'response' && 'Command resolved'}
+                  {overlayState === 'listening' && 'Listening for chairside command'}
+                  {overlayState === 'thinking' && 'Routing command to the active workflow'}
+                  {overlayState === 'response' && 'Command delivered to room context'}
                 </strong>
               </div>
 
@@ -174,7 +174,7 @@ export function VoiceOverlayScreen() {
             <div className={`event-row event-row--${overlayState === 'response' ? 'system' : 'detected'}`}>
               <span className="mono">Now</span>
               <p>
-                {overlayState === 'listening' && `${voice.overlay.wakeWord} armed. Awaiting command phrase.`}
+                {overlayState === 'listening' && `${voice.overlay.wakeWord} armed. Waiting for the next short command.`}
                 {overlayState === 'thinking' && `Command received: ${detectedPhrase}`}
                 {overlayState === 'response' && responseText}
               </p>

@@ -104,11 +104,11 @@ export function ProcedureModeScreen() {
 
           <div className="hero-procedure__signals">
             <div className="procedure-detail-block">
-              <span className="mono">Operator cue</span>
+              <span className="mono">Assistant cue</span>
               <strong>{currentStep.operatorCue}</strong>
             </div>
             <div className="procedure-detail-block">
-              <span className="mono">Verification gate</span>
+              <span className="mono">Ready to advance when</span>
               <strong>{currentStep.verification}</strong>
             </div>
           </div>
@@ -140,7 +140,7 @@ export function ProcedureModeScreen() {
       <div className="panel-grid">
         <Panel
           eyebrow="Procedure Timeline"
-          title="Live Step Progression"
+          title="Chairside Sequence"
           aside={<span className="status-block status-block--cyan">Live sequence</span>}
         >
           <div className="timeline-list">
@@ -183,18 +183,18 @@ export function ProcedureModeScreen() {
 
           <div className="signal-stack">
             <div className={`signal-block ${exceptionRaised ? 'signal-block--red' : 'signal-block--cyan'}`}>
-              <div className="mono signal-block__label">Operational Exception</div>
-              <strong>{exceptionRaised ? 'Missing item escalation raised' : 'No open tray exceptions'}</strong>
+              <div className="mono signal-block__label">Tray Exception</div>
+              <strong>{exceptionRaised ? 'Backup material issue has been flagged' : 'No active tray stops'}</strong>
               <p>
                 {exceptionRaised
-                  ? 'Tray support needs a capture fallback replacement before final scan backup.'
-                  : 'Procedure lane is clear. Continue step progression and keep fallback reserve visible.'}
+                  ? 'Capture backup has to be restaged before the room can safely lose scan as the primary path.'
+                  : 'Field is clear to proceed. Keep the backup capture lane visible as the prep advances.'}
               </p>
             </div>
 
             <div className="signal-block">
-              <div className="mono signal-block__label">Preference Carry-forward</div>
-              <strong>Patient + doctor alignment active</strong>
+              <div className="mono signal-block__label">Doctor Habit Reminder</div>
+              <strong>Preference is still live in the room</strong>
               <p>{patients.activePatient.doctorPreference}</p>
             </div>
           </div>
@@ -205,9 +205,9 @@ export function ProcedureModeScreen() {
         previousLabel="Review Prior"
         previousMeta={isFirstStep ? 'Start of sequence' : procedure.steps[currentStepIndex - 1].title}
         primaryLabel={isLastStep ? 'Final Step Live' : 'Next Step'}
-        primaryMeta={isLastStep ? 'Capture sequence armed' : procedure.steps[currentStepIndex + 1].title}
+        primaryMeta={isLastStep ? 'Capture sequence is up' : procedure.steps[currentStepIndex + 1].title}
         secondaryLabel={exceptionRaised ? 'Clear Exception' : 'Mark Missing Item'}
-        secondaryMeta={exceptionRaised ? 'Tray alert remains logged' : 'Raise tray escalation'}
+        secondaryMeta={exceptionRaised ? 'Tray alert remains logged' : 'Log a tray stop'}
         onPrevious={goToPreviousStep}
         onPrimary={goToNextStep}
         onSecondary={toggleException}

@@ -118,7 +118,7 @@ export function NewPatientFlowScreen() {
     <div className="screen-stack">
       <Panel
         eyebrow="New Patient Flow"
-        title="Clinical Intake Execution Board"
+        title="Intake Protocol Board"
         aside={<span className="status-block status-block--cobalt">{flow.arrivalWindow} arrival</span>}
       >
         <div className="intake-summary">
@@ -227,10 +227,10 @@ export function NewPatientFlowScreen() {
 
             <div className="signal-block">
               <div className="mono signal-block__label">Board protocol</div>
-              <strong>Office execution routing stays visible</strong>
+              <strong>Doctor lane does not open early</strong>
               <p>
-                Missing or blocked front-line tasks keep doctor work held until intake inputs are
-                operationally clear.
+                Front-desk and assistant blockers stay visible here so the room only turns once the
+                intake packet is genuinely ready.
               </p>
             </div>
           </div>
@@ -240,7 +240,7 @@ export function NewPatientFlowScreen() {
       <BottomActionBar
         previousLabel="Reset Board"
         previousMeta="Restore template defaults"
-        primaryLabel="Advance Protocol"
+        primaryLabel="Advance Board"
         primaryMeta={selectedTask ? `${selectedTask.role} // ${selectedTask.label}` : 'No task selected'}
         secondaryLabel={selectedTask?.state === 'missing' ? 'Clear Missing' : 'Mark Missing'}
         secondaryMeta={selectedTask?.state === 'blocked' ? 'Blocked handoff remains visible' : 'Open intake blocker'}

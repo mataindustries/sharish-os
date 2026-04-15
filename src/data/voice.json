@@ -2,40 +2,40 @@
   "overlay": {
     "wakeWord": "Sharish",
     "mode": "Command layer only",
-    "instruction": "Use short procedural commands only."
+    "instruction": "Short chairside phrases only."
   },
   "commands": [
     {
       "id": "next",
-      "phrase": "What's next?",
-      "response": "Next handoff predicted: #330 Carbide Burr to assistant lane B2 in thirty seconds."
+      "phrase": "Next bur",
+      "response": "856 taper next. Handpiece stays up."
     },
     {
       "id": "missing",
-      "phrase": "Mark item missing",
-      "response": "Capture fallback lane flagged. Impression material remains missing in D4."
+      "phrase": "Flag backup material",
+      "response": "VPS backup still missing in D4."
     },
     {
       "id": "pref",
-      "phrase": "Repeat doctor preference",
-      "response": "Doctor preference active: verify occlusion with articulating paper before distal wall reduction."
+      "phrase": "Repeat preference",
+      "response": "Articulating paper up before distal check."
     }
   ],
   "events": [
     {
       "time": "00:17:58",
       "type": "detected",
-      "content": "Sharish, what's next?"
+      "content": "Sharish, next bur."
     },
     {
       "time": "00:17:59",
       "type": "system",
-      "content": "Assistant lane B2 primed for #330 Carbide Burr handoff."
+      "content": "856 taper next. Handpiece remains live in B2."
     },
     {
       "time": "00:18:03",
       "type": "system",
-      "content": "Doctor preference remains active for distal wall clearance check."
+      "content": "Preference confirmed: articulating paper stays up for distal clearance check."
     }
   ]
 }
