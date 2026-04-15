@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BottomActionBar } from '../components/BottomActionBar'
 import { Panel } from '../components/Panel'
 import patients from '../data/patients.json'
@@ -12,6 +12,12 @@ export function ProcedureModeScreen() {
   )
   const [exceptionRaised, setExceptionRaised] = useState(false)
   const [stepPulse, setStepPulse] = useState(false)
+  const [stepTransitionDirection, setStepTransitionDirection] = useState<'forward' | 'backward'>(
+    'forward',
+  )
+  const [stepTransitioning, setStepTransitioning] = useState(false)
+  const pulseTimerRef = useRef<number | null>(null)
+  const transitionTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -21,13 +27,39 @@ export function ProcedureModeScreen() {
     return () => window.clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (pulseTimerRef.current) {
+        window.clearTimeout(pulseTimerRef.current)
+      }
+
+      if (transitionTimerRef.current) {
+        window.clearTimeout(transitionTimerRef.current)
+      }
+    }
+  }, [])
+
   const currentStep = procedure.steps[currentStepIndex]
   const isFirstStep = currentStepIndex === 0
   const isLastStep = currentStepIndex === procedure.steps.length - 1
 
   function pulseCurrentStep() {
+    if (pulseTimerRef.current) {
+      window.clearTimeout(pulseTimerRef.current)
+    }
+
     setStepPulse(true)
-    window.setTimeout(() => setStepPulse(false), 180)
+    pulseTimerRef.current = window.setTimeout(() => setStepPulse(false), 200)
+  }
+
+  function triggerStepTransition(direction: 'forward' | 'backward') {
+    if (transitionTimerRef.current) {
+      window.clearTimeout(transitionTimerRef.current)
+    }
+
+    setStepTransitionDirection(direction)
+    setStepTransitioning(true)
+    transitionTimerRef.current = window.setTimeout(() => setStepTransitioning(false), 230)
   }
 
   function goToNextStep() {
@@ -36,6 +68,7 @@ export function ProcedureModeScreen() {
       return
     }
 
+    triggerStepTransition('forward')
     setCurrentStepIndex((index) => index + 1)
     pulseCurrentStep()
   }
@@ -46,6 +79,7 @@ export function ProcedureModeScreen() {
       return
     }
 
+    triggerStepTransition('backward')
     setCurrentStepIndex((index) => index - 1)
     pulseCurrentStep()
   }
@@ -73,10 +107,15 @@ export function ProcedureModeScreen() {
           </div>
         </div>
 
-        <div className={`hero-procedure__step ${stepPulse ? 'is-pulsed' : ''}`}>
+        <div
+          className={`hero-procedure__step ${stepPulse ? 'is-pulsed' : ''} ${stepTransitioning ? 'is-transitioning' : ''} direction-${stepTransitionDirection}`}
+        >
           <div className="hero-procedure__step-header">
             <div>
-              <div className="mono eyebrow">{currentStep.label}</div>
+              <div className="hero-procedure__sequence-line">
+                <div className="mono eyebrow">{currentStep.label}</div>
+                <span className="status-block status-block--cobalt">Current step</span>
+              </div>
               <div className="hero-procedure__subhead">{procedure.caseContext.procedureName}</div>
             </div>
             <div className="hero-procedure__hud-grid">
@@ -99,16 +138,18 @@ export function ProcedureModeScreen() {
             </div>
           </div>
 
-          <div className="hero-procedure__title">{currentStep.title}</div>
-          <p className="hero-procedure__detail">{currentStep.detail}</p>
+          <div className="hero-procedure__step-copy">
+            <div className="hero-procedure__title">{currentStep.title}</div>
+            <p className="hero-procedure__detail">{currentStep.detail}</p>
+          </div>
 
-          <div className="hero-procedure__signals">
+          <div className="hero-procedure__cue-grid">
             <div className="procedure-detail-block">
               <span className="mono">Assistant cue</span>
               <strong>{currentStep.operatorCue}</strong>
             </div>
             <div className="procedure-detail-block">
-              <span className="mono">Ready to advance when</span>
+              <span className="mono">Advance once</span>
               <strong>{currentStep.verification}</strong>
             </div>
           </div>
@@ -202,16 +243,17 @@ export function ProcedureModeScreen() {
       </div>
 
       <BottomActionBar
-        previousLabel="Review Prior"
-        previousMeta={isFirstStep ? 'Start of sequence' : procedure.steps[currentStepIndex - 1].title}
+        previousLabel="Prior Step"
+        previousMeta={isFirstStep ? 'Start of live sequence' : procedure.steps[currentStepIndex - 1].title}
         primaryLabel={isLastStep ? 'Final Step Live' : 'Next Step'}
-        primaryMeta={isLastStep ? 'Capture sequence is up' : procedure.steps[currentStepIndex + 1].title}
-        secondaryLabel={exceptionRaised ? 'Clear Exception' : 'Mark Missing Item'}
-        secondaryMeta={exceptionRaised ? 'Tray alert remains logged' : 'Log a tray stop'}
+        primaryMeta={isLastStep ? 'Capture sequence is live now' : procedure.steps[currentStepIndex + 1].title}
+        secondaryLabel={exceptionRaised ? 'Clear Tray Stop' : 'Flag Tray Stop'}
+        secondaryMeta={exceptionRaised ? 'Return room to clear status' : 'Keep the backup lane visible'}
         onPrevious={goToPreviousStep}
         onPrimary={goToNextStep}
         onSecondary={toggleException}
         previousDisabled={isFirstStep}
+        secondaryTone={exceptionRaised ? 'success' : 'warning'}
       />
     </div>
   )

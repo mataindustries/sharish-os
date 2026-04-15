@@ -58,6 +58,16 @@ export function NewPatientFlowScreen() {
   const completeCount = tasks.filter((task) => task.state === 'complete').length
   const blockedCount = tasks.filter((task) => task.state === 'blocked').length
   const missingCount = tasks.filter((task) => task.state === 'missing').length
+  const activeTask = tasks.find((task) => task.state === 'active')
+  const nextQueuedTask = tasks.find((task) => task.state === 'queued')
+  const selectedTaskTone =
+    selectedTask?.state === 'missing'
+      ? 'critical'
+      : selectedTask?.state === 'blocked'
+        ? 'warning'
+        : selectedTask?.state === 'complete'
+          ? 'success'
+          : 'secondary'
 
   function resetBoard() {
     const nextTasks = cloneTemplateTasks(selectedTemplateId)
@@ -118,7 +128,7 @@ export function NewPatientFlowScreen() {
     <div className="screen-stack">
       <Panel
         eyebrow="New Patient Flow"
-        title="Intake Protocol Board"
+        title="Intake Board"
         aside={<span className="status-block status-block--cobalt">{flow.arrivalWindow} arrival</span>}
       >
         <div className="intake-summary">
@@ -154,7 +164,10 @@ export function NewPatientFlowScreen() {
                   ))}
                 </div>
               </div>
-              <p>{template.summary}</p>
+              <div className="template-card__summary">{template.summary}</div>
+              <div className="template-card__signal">
+                {selectedTemplateId === template.id ? 'Active board template' : 'Select board template'}
+              </div>
             </button>
           ))}
         </div>
@@ -205,8 +218,8 @@ export function NewPatientFlowScreen() {
           </div>
         </Panel>
 
-        <Panel eyebrow="Routing" title="Selected Task">
-          <div className="signal-stack">
+        <Panel eyebrow="Task Focus" title="Selected Intake Task">
+          <div className="task-focus-panel">
             <div
               className={`signal-block ${
                 selectedTask?.state === 'missing'
@@ -218,7 +231,7 @@ export function NewPatientFlowScreen() {
             >
               <div className="mono signal-block__label">Current selection</div>
               <strong>{selectedTask?.label}</strong>
-              <div className="ops-meta-list">
+              <div className="task-focus-panel__meta ops-meta-list">
                 <span>Owner: {selectedTask?.role}</span>
                 <span>Status: {selectedTask?.state}</span>
                 <span>{selectedTask?.detail}</span>
@@ -233,6 +246,18 @@ export function NewPatientFlowScreen() {
                 intake packet is genuinely ready.
               </p>
             </div>
+
+            <div className="task-focus-panel__next">
+              <div className="task-focus-panel__eyebrow">Board momentum</div>
+              <strong>
+                {activeTask ? `Active now: ${activeTask.label}` : 'No active intake task is open'}
+              </strong>
+              <span>
+                {nextQueuedTask
+                  ? `Next queued handoff: ${nextQueuedTask.role} // ${nextQueuedTask.label}`
+                  : 'All queued tasks have been consumed on this board.'}
+              </span>
+            </div>
           </div>
         </Panel>
       </div>
@@ -241,12 +266,19 @@ export function NewPatientFlowScreen() {
         previousLabel="Reset Board"
         previousMeta="Restore template defaults"
         primaryLabel="Advance Board"
-        primaryMeta={selectedTask ? `${selectedTask.role} // ${selectedTask.label}` : 'No task selected'}
-        secondaryLabel={selectedTask?.state === 'missing' ? 'Clear Missing' : 'Mark Missing'}
-        secondaryMeta={selectedTask?.state === 'blocked' ? 'Blocked handoff remains visible' : 'Open intake blocker'}
+        primaryMeta={activeTask ? `${activeTask.role} // ${activeTask.label}` : 'Advance next queued intake task'}
+        secondaryLabel={selectedTask?.state === 'missing' ? 'Clear Missing' : 'Flag Missing'}
+        secondaryMeta={
+          selectedTask?.state === 'blocked'
+            ? 'Blocked handoff remains visible'
+            : selectedTask?.state === 'complete'
+              ? 'Re-open this task as a missing blocker'
+              : 'Open intake blocker'
+        }
         onPrevious={resetBoard}
         onPrimary={advanceProtocol}
         onSecondary={toggleSelectedMissing}
+        secondaryTone={selectedTaskTone}
       />
     </div>
   )

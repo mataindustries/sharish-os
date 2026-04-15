@@ -12,6 +12,7 @@ interface BottomActionBarProps {
   primaryDisabled?: boolean
   secondaryDisabled?: boolean
   primaryTone?: 'primary' | 'success'
+  secondaryTone?: 'secondary' | 'warning' | 'critical' | 'success'
 }
 
 export function BottomActionBar({
@@ -28,6 +29,7 @@ export function BottomActionBar({
   primaryDisabled = false,
   secondaryDisabled = false,
   primaryTone = 'primary',
+  secondaryTone = 'critical',
 }: BottomActionBarProps) {
   return (
     <div className="bottom-action-bar">
@@ -55,7 +57,7 @@ export function BottomActionBar({
       </button>
       <button
         type="button"
-        className="action-btn action-btn--critical"
+        className={`action-btn action-btn--${secondaryTone}`}
         onClick={onSecondary}
         disabled={secondaryDisabled}
       >

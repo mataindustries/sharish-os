@@ -10,15 +10,15 @@ import { formatElapsedTime, parseElapsedTime } from '../lib/time'
 const navigation = [
   { to: '/procedure-mode', label: 'Procedure', shortLabel: 'PROC' },
   { to: '/tray-setup', label: 'Tray Setup', shortLabel: 'TRAY' },
-  { to: '/voice-overlay', label: 'Voice Layer', shortLabel: 'VOICE' },
+  { to: '/voice-overlay', label: 'Voice Command', shortLabel: 'VOICE' },
   { to: '/new-patient', label: 'New Patient', shortLabel: 'INTAKE' },
 ]
 
 const routeMeta: Record<string, { title: string; status: string }> = {
   '/procedure-mode': { title: 'Procedure Mode', status: 'Live Assist' },
   '/tray-setup': { title: 'Tray Setup', status: 'Ready Check' },
-  '/voice-overlay': { title: 'Voice Overlay', status: 'Command Layer' },
-  '/new-patient': { title: 'New Patient Flow', status: 'Intake Active' },
+  '/voice-overlay': { title: 'Voice Command Layer', status: 'Command Layer' },
+  '/new-patient': { title: 'New Patient Intake', status: 'Intake Active' },
 }
 
 export function AppShell() {
@@ -152,7 +152,7 @@ export function AppShell() {
                 </div>
 
                 <div className="command-preview">
-                  <div className="mono panel__eyebrow">Voice Layer</div>
+                  <div className="mono panel__eyebrow">Voice Command</div>
                   <p>
                     Wake word {voice.overlay.wakeWord}. {voice.overlay.instruction}
                   </p>

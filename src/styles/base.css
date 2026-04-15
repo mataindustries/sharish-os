@@ -24,6 +24,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 button,
@@ -35,6 +36,7 @@ select {
 
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -51,6 +53,11 @@ h3 {
 
 #root {
   min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(111, 231, 255, 0.7);
+  outline-offset: 2px;
 }
 
 .mono {

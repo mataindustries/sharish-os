@@ -16,13 +16,6 @@ type TrayItem = {
   note: string
 }
 
-const trayStateCycle: TrayItemState[] = ['ready', 'warning', 'missing']
-
-function getNextTrayState(state: TrayItemState): TrayItemState {
-  const currentIndex = trayStateCycle.indexOf(state)
-  return trayStateCycle[(currentIndex + 1) % trayStateCycle.length]
-}
-
 export function TraySetupScreen() {
   const [items, setItems] = useState<TrayItem[]>(() =>
     tray.items.map((item) => ({ ...item, state: item.state as TrayItemState })),
@@ -35,6 +28,9 @@ export function TraySetupScreen() {
   const warningCount = items.filter((item) => item.state === 'warning').length
   const missingCount = items.filter((item) => item.state === 'missing').length
   const readinessPercent = Math.round((readyCount / items.length) * 100)
+  const releaseBlocked = missingCount > 0
+  const needsReview = !releaseBlocked && warningCount > 0
+  const gateStatus = releaseBlocked ? 'blocked' : needsReview ? 'review' : 'ready'
 
   const checklist = tray.setupChecklist.map((entry) => {
     if (entry.id === 'zoning') {
@@ -57,21 +53,34 @@ export function TraySetupScreen() {
     return entry
   })
 
+  const selectedAction = selectedItem
+    ? selectedItem.state === 'ready'
+      ? {
+          label: 'Flag Watch',
+          meta: 'Needs review before room release',
+          tone: 'warning' as const,
+          nextState: 'warning' as TrayItemState,
+        }
+      : selectedItem.state === 'warning'
+        ? {
+            label: 'Escalate Missing',
+            meta: 'Convert this watch item into a room hold',
+            tone: 'critical' as const,
+            nextState: 'missing' as TrayItemState,
+          }
+        : {
+            label: 'Restore Ready',
+            meta: 'Return this lane to seat-ready status',
+            tone: 'success' as const,
+            nextState: 'ready' as TrayItemState,
+          }
+    : null
+
   function updateItemState(itemId: string, nextState: TrayItemState) {
     setConfirmed(false)
     setItems((currentItems) =>
       currentItems.map((item) => (item.id === itemId ? { ...item, state: nextState } : item)),
     )
-  }
-
-  function cycleItemState(itemId: string) {
-    const item = items.find((entry) => entry.id === itemId)
-
-    if (!item) {
-      return
-    }
-
-    updateItemState(itemId, getNextTrayState(item.state))
   }
 
   function resetTray() {
@@ -80,16 +89,16 @@ export function TraySetupScreen() {
     setSelectedItemId(tray.items[0]?.id ?? '')
   }
 
-  function toggleSelectedMissing() {
-    if (!selectedItem) {
+  function runSelectedAction() {
+    if (!selectedItem || !selectedAction) {
       return
     }
 
-    updateItemState(selectedItem.id, selectedItem.state === 'missing' ? 'ready' : 'missing')
+    updateItemState(selectedItem.id, selectedAction.nextState)
   }
 
   function confirmSetup() {
-    setConfirmed(missingCount === 0)
+    setConfirmed(!releaseBlocked)
   }
 
   return (
@@ -111,10 +120,7 @@ export function TraySetupScreen() {
               key={item.id}
               type="button"
               className={`blueprint-cell blueprint-cell--${item.state} ${selectedItem?.id === item.id ? 'is-selected' : ''}`}
-              onClick={() => {
-                setSelectedItemId(item.id)
-                cycleItemState(item.id)
-              }}
+              onClick={() => setSelectedItemId(item.id)}
             >
               <div className="blueprint-cell__header">
                 <span className="mono">{item.slot}</span>
@@ -124,6 +130,10 @@ export function TraySetupScreen() {
                 <strong>{item.name}</strong>
                 <span>{item.zone}</span>
                 <p>{item.detail}</p>
+              </div>
+              <div className="blueprint-cell__footer">
+                <span className="blueprint-cell__prompt">Select item</span>
+                {selectedItem?.id === item.id ? <span className="tray-action-hint">Selected</span> : null}
               </div>
             </button>
           ))}
@@ -136,14 +146,23 @@ export function TraySetupScreen() {
             <p>{tray.doctorNote.detail}</p>
           </div>
 
-            <div className={`signal-block ${selectedItem?.state === 'missing' ? 'signal-block--red' : 'signal-block--cobalt'}`}>
-              <div className="mono signal-block__label">Selected Tray Item</div>
-              <strong>{selectedItem?.name}</strong>
+          <div
+            className={`signal-block ${
+              selectedItem?.state === 'missing'
+                ? 'signal-block--red'
+                : selectedItem?.state === 'warning'
+                  ? 'signal-block--amber'
+                  : 'signal-block--cobalt'
+            }`}
+          >
+            <div className="mono signal-block__label">Selected Tray Item</div>
+            <strong>{selectedItem?.name}</strong>
             <div className="ops-meta-list">
               <span>Slot: {selectedItem?.slot}</span>
               <span>Status: {selectedItem?.state}</span>
               <span>{selectedItem?.detail}</span>
               <span>Note: {selectedItem?.note}</span>
+              {selectedAction ? <span>Next action: {selectedAction.label}</span> : null}
             </div>
           </div>
         </div>
@@ -169,36 +188,103 @@ export function TraySetupScreen() {
           eyebrow="Setup Confirmation"
           title="Release Gate"
           aside={
-            <span className={`status-block ${confirmed ? 'status-block--cyan' : 'status-block--amber'}`}>
-              {confirmed ? 'Released' : 'Hold'}
+            <span
+              className={`status-block ${
+                confirmed
+                  ? 'status-block--cyan'
+                  : gateStatus === 'blocked'
+                    ? 'status-block--red'
+                    : gateStatus === 'review'
+                      ? 'status-block--amber'
+                      : 'status-block--cobalt'
+              }`}
+            >
+              {confirmed
+                ? 'Released'
+                : gateStatus === 'blocked'
+                  ? 'Hold'
+                  : gateStatus === 'review'
+                    ? 'Review'
+                    : 'Ready'}
             </span>
           }
         >
-          <div className="signal-stack">
-            <div className={`signal-block ${missingCount > 0 ? 'signal-block--red' : 'signal-block--cyan'}`}>
-              <div className="mono signal-block__label">{tray.confirmation.title}</div>
-              <strong>{confirmed ? 'Tray released to room' : `${readinessPercent}% staged`}</strong>
-              <p>
-                {missingCount > 0
-                  ? `${missingCount} missing item keeps this room on hold. Restage it or clear the fallback plan with the doctor before seat.`
-                  : tray.confirmation.detail}
-              </p>
+          <div className="release-gate">
+            <div className="release-gate__header">
+              <strong>
+                {releaseBlocked
+                  ? 'Tray hold is live'
+                  : needsReview
+                    ? 'Tray can move with active review'
+                    : confirmed
+                      ? 'Tray released to room'
+                      : 'Tray is clear for release'}
+              </strong>
+              <span
+                className={`tray-state tray-state--${
+                  gateStatus === 'ready' ? 'ready' : gateStatus === 'review' ? 'warning' : 'missing'
+                }`}
+              >
+                {gateStatus}
+              </span>
             </div>
 
-            <div className="readiness-summary-grid">
-              <div className="summary-metric">
-                <span className="mono">Sterile zones</span>
+            <div className="readiness-meter" aria-hidden="true">
+              <div className="readiness-meter__fill" style={{ width: `${readinessPercent}%` }} />
+            </div>
+
+            <div className="signal-stack">
+              <div className={`signal-block ${missingCount > 0 ? 'signal-block--red' : 'signal-block--cyan'}`}>
+                <div className="mono signal-block__label">{tray.confirmation.title}</div>
                 <strong>
-                  {tray.readiness.zonesChecked}/{tray.readiness.zonesTotal}
+                  {confirmed
+                    ? 'Tray released to room'
+                    : releaseBlocked
+                      ? 'Resolve missing tray lane before seat'
+                      : `${readinessPercent}% staged`}
                 </strong>
+                <p>
+                  {missingCount > 0
+                    ? `${missingCount} missing item keeps this room on hold. Restage it or clear the fallback plan with the doctor before seat.`
+                    : needsReview
+                      ? `${warningCount} tray item still needs review. The room can move, but the watch item should stay visible until the doctor sits.`
+                      : tray.confirmation.detail}
+                </p>
               </div>
-              <div className="summary-metric">
-                <span className="mono">Ready items</span>
-                <strong>{readyCount}</strong>
+
+              <div className="readiness-summary-grid">
+                <div className="summary-metric">
+                  <span className="mono">Sterile zones</span>
+                  <strong>
+                    {tray.readiness.zonesChecked}/{tray.readiness.zonesTotal}
+                  </strong>
+                </div>
+                <div className="summary-metric">
+                  <span className="mono">Ready items</span>
+                  <strong>{readyCount}</strong>
+                </div>
+                <div className="summary-metric">
+                  <span className="mono">Warnings</span>
+                  <strong>{warningCount}</strong>
+                </div>
               </div>
-              <div className="summary-metric">
-                <span className="mono">Warnings</span>
-                <strong>{warningCount}</strong>
+
+              <div className={`release-gate__line release-gate__line--${releaseBlocked ? 'blocked' : 'ready'}`}>
+                <strong>Fallback capture lane</strong>
+                <span>
+                  {releaseBlocked
+                    ? 'Backup material is still missing and keeps the room on a hard hold.'
+                    : 'Backup material is staged or explicitly cleared for this room.'}
+                </span>
+              </div>
+
+              <div className={`release-gate__line release-gate__line--${needsReview ? 'review' : 'ready'}`}>
+                <strong>Preference and tissue lanes</strong>
+                <span>
+                  {needsReview
+                    ? 'A watch item is still open. Keep the selected lane visible as the room turns.'
+                    : 'Doctor preference items and tissue lane are staged cleanly.'}
+                </span>
               </div>
             </div>
           </div>
@@ -209,13 +295,22 @@ export function TraySetupScreen() {
         previousLabel="Reset Tray"
         previousMeta="Restore default staging"
         primaryLabel={confirmed ? 'Tray Released' : 'Release Tray'}
-        primaryMeta={missingCount > 0 ? `${missingCount} item still blocks release` : 'Seat-ready gate'}
-        secondaryLabel={selectedItem?.state === 'missing' ? 'Clear Missing' : 'Mark Missing'}
-        secondaryMeta={selectedItem ? `${selectedItem.slot} // ${selectedItem.name}` : 'Select tray item'}
+        primaryMeta={
+          releaseBlocked
+            ? `${missingCount} item still blocks release`
+            : needsReview
+              ? `${warningCount} watch item stays visible`
+              : 'Seat-ready gate clear'
+        }
+        secondaryLabel={selectedAction?.label ?? 'Inspect Tray'}
+        secondaryMeta={selectedItem ? `${selectedItem.slot} // ${selectedAction?.meta ?? selectedItem.name}` : 'Select tray item'}
         onPrevious={resetTray}
         onPrimary={confirmSetup}
-        onSecondary={toggleSelectedMissing}
+        onSecondary={runSelectedAction}
         primaryTone={confirmed ? 'success' : 'primary'}
+        secondaryTone={selectedAction?.tone ?? 'secondary'}
+        primaryDisabled={releaseBlocked}
+        secondaryDisabled={!selectedAction}
       />
     </div>
   )

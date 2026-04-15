@@ -7,6 +7,27 @@ import voice from '../data/voice.json'
 
 type OverlayState = 'listening' | 'thinking' | 'response'
 
+const overlayStateCopy: Record<
+  OverlayState,
+  { headline: string; detail: string; responseLabel: string }
+> = {
+  listening: {
+    headline: 'Listening for chairside command',
+    detail: 'Wake word is armed. Short command phrases route against the live procedure context only.',
+    responseLabel: 'Awaiting next command',
+  },
+  thinking: {
+    headline: 'Routing command into workflow context',
+    detail: 'Command has been captured and is resolving against the active tray, doctor preference, and procedure step.',
+    responseLabel: 'Resolving command',
+  },
+  response: {
+    headline: 'Command resolved to room context',
+    detail: 'Response has been reduced to a single operational cue for the chairside team.',
+    responseLabel: 'Command output',
+  },
+}
+
 export function VoiceOverlayScreen() {
   const [overlayState, setOverlayState] = useState<OverlayState>('listening')
   const [activeCommandId, setActiveCommandId] = useState(voice.commands[0]?.id ?? '')
@@ -25,6 +46,7 @@ export function VoiceOverlayScreen() {
   const activeCommand = voice.commands.find((command) => command.id === activeCommandId) ?? voice.commands[0]
   const readyCount = tray.items.filter((item) => item.state === 'ready').length
   const missingCount = tray.items.filter((item) => item.state === 'missing').length
+  const currentStateCopy = overlayStateCopy[overlayState]
 
   function armListening() {
     if (responseTimerRef.current) {
@@ -54,7 +76,7 @@ export function VoiceOverlayScreen() {
     responseTimerRef.current = window.setTimeout(() => {
       setOverlayState('response')
       setResponseText(command.response)
-    }, 650)
+    }, 520)
   }
 
   return (
@@ -90,7 +112,7 @@ export function VoiceOverlayScreen() {
         <div className={`voice-overlay voice-overlay--${overlayState}`}>
           <div className="voice-overlay__header">
             <div>
-              <div className="mono eyebrow">Voice Overlay</div>
+              <div className="mono eyebrow">Voice Command</div>
               <h2 className="voice-overlay__title">Command Layer Active</h2>
             </div>
             <div className="status-stack">
@@ -101,29 +123,53 @@ export function VoiceOverlayScreen() {
             </div>
           </div>
 
+          <div className="voice-overlay__state-track" aria-label="Overlay state progression">
+            {(['listening', 'thinking', 'response'] as const).map((state) => (
+              <div
+                key={state}
+                className={`voice-overlay__state-node ${overlayState === state ? 'is-active' : ''}`}
+              >
+                <span>{state}</span>
+                <strong>{state === 'listening' ? 'Armed' : state === 'thinking' ? 'Resolving' : 'Delivered'}</strong>
+              </div>
+            ))}
+          </div>
+
           <div className="voice-overlay__panel">
             <div className="voice-ring" aria-hidden="true">
+              <div className="voice-ring__wave">
+                <span className="voice-ring__wave-bar" />
+                <span className="voice-ring__wave-bar" />
+                <span className="voice-ring__wave-bar" />
+                <span className="voice-ring__wave-bar" />
+                <span className="voice-ring__wave-bar" />
+              </div>
               <div className="voice-ring__core" />
             </div>
 
             <div className="voice-command-stack">
               <div className="voice-state-line">
                 <span className="mono">State</span>
-                <strong>
-                  {overlayState === 'listening' && 'Listening for chairside command'}
-                  {overlayState === 'thinking' && 'Routing command to the active workflow'}
-                  {overlayState === 'response' && 'Command delivered to room context'}
-                </strong>
+                <strong>{currentStateCopy.headline}</strong>
+                <div className="voice-state-line__detail">{currentStateCopy.detail}</div>
               </div>
 
               <div className="voice-state-line">
                 <span className="mono">Detected</span>
                 <strong>{detectedPhrase}</strong>
+                <div className="voice-state-line__detail">
+                  Active command maps into the current crown-prep room context.
+                </div>
               </div>
 
               <div className="voice-state-line">
-                <span className="mono">Response</span>
-                <strong>{overlayState === 'thinking' ? '...' : responseText}</strong>
+                <span className="mono">{currentStateCopy.responseLabel}</span>
+                <strong>{overlayState === 'thinking' ? 'Resolving active cue...' : responseText}</strong>
+                <div className="voice-state-line__detail">
+                  {overlayState === 'thinking'
+                    ? 'The overlay stays terse while command routing completes.'
+                    : 'Response stays command-layer only, without conversational filler.'}
+                </div>
               </div>
             </div>
           </div>
@@ -147,7 +193,7 @@ export function VoiceOverlayScreen() {
       </section>
 
       <div className="panel-grid">
-        <Panel eyebrow="Recognized Commands" title="Mapped Phrases">
+        <Panel eyebrow="Recognized Commands" title="Command Library">
           <div className="command-grid">
             {voice.commands.map((command) => (
               <button
@@ -163,7 +209,7 @@ export function VoiceOverlayScreen() {
           </div>
         </Panel>
 
-        <Panel eyebrow="Recent Events" title="Voice Event Stream">
+        <Panel eyebrow="Recent Events" title="Execution Trace">
           <div className="event-list">
             {voice.events.map((event) => (
               <div className={`event-row event-row--${event.type}`} key={event.time + event.content}>
@@ -174,7 +220,7 @@ export function VoiceOverlayScreen() {
             <div className={`event-row event-row--${overlayState === 'response' ? 'system' : 'detected'}`}>
               <span className="mono">Now</span>
               <p>
-                {overlayState === 'listening' && `${voice.overlay.wakeWord} armed. Waiting for the next short command.`}
+                {overlayState === 'listening' && `${voice.overlay.wakeWord} armed. Command channel is listening for the next short phrase.`}
                 {overlayState === 'thinking' && `Command received: ${detectedPhrase}`}
                 {overlayState === 'response' && responseText}
               </p>
