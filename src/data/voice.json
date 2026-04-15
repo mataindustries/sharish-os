@@ -1,24 +1,24 @@
 {
   "overlay": {
-    "prompt": "Listening for command phrases: 'what's next', 'mark item missing', 'repeat doctor preference'.",
     "wakeWord": "Sharish",
-    "mode": "Command layer only"
+    "mode": "Command layer only",
+    "instruction": "Use short procedural commands only."
   },
   "commands": [
     {
       "id": "next",
       "phrase": "What's next?",
-      "response": "Predict next handoff and stage the instrument lane."
+      "response": "Next handoff predicted: #330 Carbide Burr to assistant lane B2 in thirty seconds."
     },
     {
       "id": "missing",
       "phrase": "Mark item missing",
-      "response": "Raise tray exception and highlight the critical zone."
+      "response": "Capture fallback lane flagged. Impression material remains missing in D4."
     },
     {
       "id": "pref",
       "phrase": "Repeat doctor preference",
-      "response": "Inject the saved preference into the active procedure slab."
+      "response": "Doctor preference active: verify occlusion with articulating paper before distal wall reduction."
     }
   ],
   "events": [
@@ -30,7 +30,7 @@
     {
       "time": "00:17:59",
       "type": "system",
-      "content": "Next handoff predicted: #330 Carbide Burr plus high-speed handpiece."
+      "content": "Assistant lane B2 primed for #330 Carbide Burr handoff."
     },
     {
       "time": "00:18:03",

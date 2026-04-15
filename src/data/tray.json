@@ -1,39 +1,67 @@
 {
   "readiness": {
-    "readyPercent": 84,
+    "readyPercent": 72,
     "zonesChecked": 5,
     "zonesTotal": 6
+  },
+  "doctorNote": {
+    "title": "Doctor Tray Preference",
+    "detail": "Keep articulating paper and distal wall clearance check tools in the front-left lane before proximal break."
   },
   "items": [
     {
       "id": "mirror",
       "name": "Mirror / Explorer",
       "slot": "A1",
-      "state": "ready"
+      "zone": "Front instruments",
+      "detail": "Mirror face up, explorer locked parallel to patient-right edge.",
+      "state": "ready",
+      "note": "Doctor wants mirror access first on seat."
     },
     {
       "id": "handpiece",
       "name": "High-speed handpiece",
       "slot": "B2",
-      "state": "ready"
+      "zone": "Drive lane",
+      "detail": "Water spray tested and tubing oriented left.",
+      "state": "ready",
+      "note": "Primary drive lane for burr swap."
     },
     {
       "id": "burr",
       "name": "Burr block // crown prep set",
       "slot": "B3",
-      "state": "ready"
+      "zone": "Prep lane",
+      "detail": "Sequence block aligned for reduction then margin finish.",
+      "state": "ready",
+      "note": "Front-load #330 before chamfer diamond."
     },
     {
       "id": "cord",
       "name": "Retraction cord #00",
       "slot": "C1",
-      "state": "warning"
+      "zone": "Materials reserve",
+      "detail": "Reserve count is low; backup vial not yet opened.",
+      "state": "warning",
+      "note": "Open backup before margin refinement."
+    },
+    {
+      "id": "articulating",
+      "name": "Articulating paper",
+      "slot": "C2",
+      "zone": "Preference lane",
+      "detail": "Pulled forward per doctor preference for distal wall verification.",
+      "state": "ready",
+      "note": "Must stay visible near prep lane."
     },
     {
       "id": "impression",
       "name": "Impression material",
       "slot": "D4",
-      "state": "critical"
+      "zone": "Capture fallback",
+      "detail": "Fallback material missing from rear slab lane.",
+      "state": "missing",
+      "note": "Escalate before scan backup is required."
     }
   ],
   "setupChecklist": [
@@ -41,19 +69,33 @@
       "id": "barriers",
       "title": "Barrier and isolation check",
       "detail": "Light handles, bracket tray, and suction lines sealed before seating.",
-      "state": "complete"
+      "state": "complete",
+      "owner": "Assistant"
     },
     {
-      "id": "instruments",
+      "id": "zoning",
       "title": "Instrument zoning",
       "detail": "Place prep burs by sequence, mirror forward, and orient handpiece tubing left.",
-      "state": "active"
+      "state": "active",
+      "owner": "Assistant"
     },
     {
-      "id": "materials",
-      "title": "Material reserve",
-      "detail": "Seat hemostatic, cord, and provisional material in rear slab lane.",
-      "state": "queued"
+      "id": "preferences",
+      "title": "Doctor preference staging",
+      "detail": "Move articulating paper and distal clearance check tools into front-left lane.",
+      "state": "active",
+      "owner": "Doctor preference"
+    },
+    {
+      "id": "fallback",
+      "title": "Capture fallback reserve",
+      "detail": "Restage impression material or explicitly clear scan-only plan before seating.",
+      "state": "blocked",
+      "owner": "Front desk supply"
     }
-  ]
+  ],
+  "confirmation": {
+    "title": "Confirm Setup",
+    "detail": "Lock tray as procedure-ready only when missing items are cleared or acknowledged."
+  }
 }

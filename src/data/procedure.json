@@ -5,46 +5,88 @@
     "doctor": "Dr. Rowan Chen",
     "assistant": "M. Patel, RDA",
     "room": "OP-04",
+    "tooth": "#14",
     "elapsed": "00:18:42"
   },
-  "currentStep": {
-    "label": "Current Step",
-    "title": "Initial Occlusal Reduction",
-    "detail": "Maintain water spray and keep reduction depth uniform across the occlusal table."
-  },
-  "nextHandoff": {
-    "label": "Predicted Next Handoff",
-    "instrument": "#330 Carbide Burr",
-    "supportingItem": "High-speed handpiece already primed on tray zone B2."
-  },
   "doctorPreference": {
-    "title": "Preference Injection",
-    "detail": "Dr. Chen wants distal wall clearance checked before moving to proximal break."
+    "title": "Doctor Preference Injection",
+    "priority": "High attention",
+    "detail": "Verify occlusion with articulating paper before reducing the distal wall, then confirm clearance before margin refinement.",
+    "trigger": "Before distal wall clearance"
   },
-  "timeline": [
-    {
-      "id": "anesthesia",
-      "label": "Anesthesia confirmed",
-      "time": "00:04",
-      "state": "complete"
-    },
-    {
-      "id": "shade",
-      "label": "Shade reference captured",
-      "time": "00:08",
-      "state": "complete"
-    },
+  "steps": [
     {
       "id": "reduction",
-      "label": "Occlusal reduction",
-      "time": "Now",
-      "state": "active"
+      "phase": "Preparation",
+      "label": "Step 01",
+      "title": "Initial Occlusal Reduction",
+      "detail": "Maintain water spray and keep reduction depth uniform across the occlusal table before moving to cusp refinement.",
+      "operatorCue": "Stay centered on the occlusal table and keep the field dry enough for visibility.",
+      "verification": "Reduction grooves read even and depth is clinically consistent.",
+      "predictedHandoff": {
+        "label": "Predicted Next Handoff",
+        "instrument": "#330 Carbide Burr",
+        "supportingItem": "High-speed handpiece staged in tray zone B2 with water spray checked.",
+        "owner": "Assistant lane",
+        "timing": "Within 00:30",
+        "trigger": "Release once depth is confirmed."
+      }
+    },
+    {
+      "id": "proximal",
+      "phase": "Preparation",
+      "label": "Step 02",
+      "title": "Proximal Break Contact",
+      "detail": "Open interproximal contact cleanly while preserving adjacent tooth surfaces and maintaining bur control.",
+      "operatorCue": "Doctor preference applies here: verify distal wall clearance before committing to the break.",
+      "verification": "Contact opens without dragging and clearance is visible from the assistant side.",
+      "predictedHandoff": {
+        "label": "Predicted Next Handoff",
+        "instrument": "Fine chamfer diamond",
+        "supportingItem": "Margin refinement bur and air-water ready in rear slab lane C1.",
+        "owner": "Doctor handoff",
+        "timing": "Within 01:10",
+        "trigger": "Advance after proximal walls are opened."
+      }
     },
     {
       "id": "margin",
-      "label": "Axial wall + margin refinement",
-      "time": "Next",
-      "state": "queued"
+      "phase": "Margin Work",
+      "label": "Step 03",
+      "title": "Axial Wall + Margin Refinement",
+      "detail": "Refine axial walls and smooth the margin while maintaining taper and visibility for the final impression path.",
+      "operatorCue": "Keep the retraction lane open and cord reserve visible before margin pass.",
+      "verification": "Margin is continuous, smooth, and visible without soft tissue collapse.",
+      "predictedHandoff": {
+        "label": "Predicted Next Handoff",
+        "instrument": "Retraction cord pack",
+        "supportingItem": "Cord #00 plus hemostatic staged in zone C1 for immediate pass.",
+        "owner": "Assistant prep lane",
+        "timing": "Within 00:45",
+        "trigger": "Release once final margin sweep is clean."
+      }
+    },
+    {
+      "id": "scan",
+      "phase": "Capture",
+      "label": "Step 04",
+      "title": "Cord Placement + Final Scan",
+      "detail": "Place cord, verify tissue control, and hand off to final scan or impression capture without breaking flow.",
+      "operatorCue": "Keep scan wand lane sterile and provisional material reserve visible.",
+      "verification": "Field is dry, tissue is controlled, and capture path is ready.",
+      "predictedHandoff": {
+        "label": "Predicted Next Handoff",
+        "instrument": "Scan wand",
+        "supportingItem": "Impression fallback remains blocked until material is restaged.",
+        "owner": "Room completion",
+        "timing": "Final sequence",
+        "trigger": "Advance after cord placement and isolation check."
+      }
     }
+  ],
+  "safetyFlags": [
+    "Anxiety protocol",
+    "Nitrous cleared",
+    "Latex allergy"
   ]
 }
